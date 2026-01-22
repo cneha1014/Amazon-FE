@@ -41,12 +41,19 @@ resource "aws_eks_cluster" "example" {
     subnet_ids = data.aws_subnets.public.ids
   }
 
+  lifecycle {
+    ignore_changes = [
+      bootstrap_self_managed_addons
+    ]
+  }
+
   # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
   # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.
   depends_on = [
     aws_iam_role_policy_attachment.example-AmazonEKSClusterPolicy,
   ]
 }
+
 
 resource "aws_iam_role" "example1" {
   name = "eks-node-group-cloud"
